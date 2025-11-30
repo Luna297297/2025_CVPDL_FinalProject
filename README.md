@@ -98,10 +98,6 @@ from yolo12_shiftwise import apply_shiftwise_patch
 apply_shiftwise_patch()  # 必須先執行這個
 ```
 
-## 授權
-
-本專案遵循 AGPL-3.0 授權（與 ultralytics 相同）。
-
 ## 參考
 
 - [Ultralytics YOLO](https://github.com/ultralytics/ultralytics)
