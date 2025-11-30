@@ -56,6 +56,10 @@ def _create_c3k2_sw_class():
     """動態創建 C3k2_SW 類，繼承自 C2f（避免循環依賴）"""
     from ultralytics.nn.modules.block import C2f, C3k
     
+    # 在閉包中捕獲模組級別的 BottleneckSW（避免循環依賴）
+    # BottleneckSW 在模組級別定義，所以可以在閉包中訪問
+    _BottleneckSW = BottleneckSW  # 捕獲模組級別的 BottleneckSW
+    
     class C3k2_SW(C2f):
         """C3k2 variant backed by ShiftWise bottlenecks with configurable big_k.
         
@@ -144,15 +148,9 @@ def _create_c3k2_sw_class():
                 self.m = nn.ModuleList(block(self.c, self.c, 2, shortcut, g) for _ in range(n))
             else:
                 # Use BottleneckSW with configurable big_k
-                # 注意：這裡需要從當前模組導入，避免循環依賴
-                import sys
-                current_module = sys.modules[__name__]
-                BottleneckSW = getattr(current_module, 'BottleneckSW', None)
-                if BottleneckSW is None:
-                    # 如果還沒定義，從外部導入
-                    from .block import BottleneckSW
+                # 使用閉包中捕獲的 _BottleneckSW（避免循環依賴和 sys.modules 問題）
                 self.m = nn.ModuleList(
-                    BottleneckSW(self.c, self.c, shortcut, e=1.0, big_k=big_k, replace_both=replace_both)
+                    _BottleneckSW(self.c, self.c, shortcut, e=1.0, big_k=big_k, replace_both=replace_both)
                     for _ in range(n)
                 )
     
