@@ -103,15 +103,13 @@ def _create_c3k2_sw_class():
             # 調用父類 C2f 的 __init__
             # C2f 的參數順序是: (c1, c2, n, shortcut, g, e)
             # parse_model 傳入的參數順序是: (c1, c2, n, c3k, e, g, shortcut, big_k, replace_both)
-            # 所以我們需要重新排列參數並確保類型正確
-            import inspect
-            frame = inspect.currentframe()
-            args_values = inspect.getargvalues(frame)
+            # 注意：parse_model 已經處理了 c1 和 c2，所以這裡直接使用即可
             
-            # 確保所有參數都是正確的類型（避免 tuple 或其他類型錯誤）
-            c1 = int(c1) if not isinstance(c1, (tuple, list)) else int(c1[0] if isinstance(c1, (tuple, list)) else c1)
-            c2 = int(c2) if not isinstance(c2, (tuple, list)) else int(c2[0] if isinstance(c2, (tuple, list)) else c2)
-            n = int(n) if not isinstance(n, (tuple, list)) else int(n[0] if isinstance(n, (tuple, list)) else n)
+            # 確保所有參數都是正確的類型
+            # c1 和 c2 應該已經是正確的 int 類型（由 parse_model 處理）
+            c1 = int(c1) if not isinstance(c1, (tuple, list)) else int(c1[0])
+            c2 = int(c2) if not isinstance(c2, (tuple, list)) else int(c2[0])
+            n = int(n) if not isinstance(n, (tuple, list)) else int(n[0])
             
             # 確保 e, g, shortcut 是正確類型
             if isinstance(e, (tuple, list)):
@@ -128,6 +126,12 @@ def _create_c3k2_sw_class():
                 shortcut = bool(shortcut[0]) if len(shortcut) > 0 else True
             else:
                 shortcut = bool(shortcut) if shortcut is not None else True
+            
+            # 驗證參數有效性
+            if c1 <= 0 or c2 <= 0:
+                raise ValueError(f"Invalid channel values: c1={c1}, c2={c2}. This usually means parse_model didn't process args correctly.")
+            if e <= 0:
+                raise ValueError(f"Invalid expansion ratio: e={e}. Must be > 0.")
             
             super().__init__(c1, c2, n, shortcut, g, e)
             
