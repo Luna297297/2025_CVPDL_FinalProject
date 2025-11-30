@@ -1,16 +1,3 @@
-# YOLO12 with ShiftWise Convolution
-
-獨立專案：在 Ultralytics YOLO 中整合 ShiftWise 卷積，**無需修改 ultralytics 源碼**。
-
-## 為什麼要獨立專案？
-
-之前的做法是直接在 fork 的 `ultralytics` 資料夾中修改源碼，這會導致：
-- ❌ 看起來像是要修改整個 ultralytics 專案
-- ❌ 難以維護和更新（ultralytics 更新時會衝突）
-- ❌ 不符合最佳實踐
-
-**正確的做法**：創建獨立專案，通過 monkey patching 動態注入模組，不修改 ultralytics 源碼。
-
 ## 專案結構
 
 ```
@@ -37,13 +24,7 @@ yolo12-shiftwise/
 ### 1. 安裝依賴
 
 ```bash
-# 安裝 ultralytics（從官方源）
 pip install ultralytics
-
-# 或從源碼安裝
-git clone https://github.com/ultralytics/ultralytics.git
-cd ultralytics
-pip install -e .
 ```
 
 ### 2. 安裝 shift-wiseConv（CUDA 擴展）
@@ -77,7 +58,6 @@ from ultralytics import YOLO
 model = YOLO("configs/yolo12s_shiftwise.yaml")
 
 # 4. 訓練
-model.train(data="coco.yaml", epochs=100)
 ```
 
 ### YAML 配置範例
@@ -99,12 +79,6 @@ backbone:
 
 3. **無侵入性**：不修改 ultralytics 源碼，可以隨時更新 ultralytics。
 
-## 優勢
-
-✅ **獨立維護**：專案獨立，不影響 ultralytics  
-✅ **易於更新**：可以隨時更新 ultralytics 而不會衝突  
-✅ **符合最佳實踐**：使用擴展而非修改  
-✅ **靈活配置**：可以選擇性地啟用/禁用 ShiftWise  
 
 ## 故障排除
 
