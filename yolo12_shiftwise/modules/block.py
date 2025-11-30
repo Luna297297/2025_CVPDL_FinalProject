@@ -87,8 +87,30 @@ def _create_c3k2_sw_class():
             big_k: int = 13,
             replace_both: bool = True,
         ):
-            """Initialize ShiftWise-enabled C3k2 module with configurable big_k."""
+            """Initialize ShiftWise-enabled C3k2 module with configurable big_k.
+            
+            Args:
+                c1: Input channels
+                c2: Output channels
+                n: Number of bottleneck blocks
+                c3k: Whether to use C3k blocks (if True, falls back to standard C3k)
+                e: Expansion ratio
+                g: Groups for convolutions
+                shortcut: Whether to use shortcut connections
+                big_k: Equivalent large kernel size for ShiftWise (must be >> 3, paper uses 13-51)
+                replace_both: If True, replace both conv layers in each bottleneck with ShiftWiseConv
+            """
             # 調用父類 C2f 的 __init__
+            # C2f 的參數順序是: (c1, c2, n, shortcut, g, e)
+            # parse_model 傳入的參數順序是: (c1, c2, n, c3k, e, g, shortcut, big_k, replace_both)
+            # 所以我們需要重新排列參數
+            # 確保所有參數都是正確的類型
+            c1 = int(c1)
+            c2 = int(c2)
+            n = int(n)
+            shortcut = bool(shortcut) if not isinstance(shortcut, bool) else shortcut
+            g = int(g) if g is not None else 1
+            e = float(e) if e is not None else 0.5
             super().__init__(c1, c2, n, shortcut, g, e)
             
             # 替換 m 為 ShiftWise 版本

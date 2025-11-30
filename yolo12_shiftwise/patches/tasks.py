@@ -90,26 +90,9 @@ def apply_shiftwise_patch():
             repeat_modules_set.add(C3k2_SW)
             tasks.repeat_modules = frozenset(repeat_modules_set)
         
-        # 6. Patch parse_model 中的 C3k2_SW 處理邏輯
-        # 保存原始的 parse_model
-        if not hasattr(tasks, '_parse_model_original'):
-            tasks._parse_model_original = tasks.parse_model
-        
-        # 創建新的 parse_model wrapper
-        def parse_model_with_shiftwise(d, ch, verbose=True):
-            """Patched parse_model that supports ShiftWise modules."""
-            # 調用原始 parse_model，但先確保 C3k2_SW 在 globals 中
-            model_globals = sys.modules['ultralytics.nn.tasks'].__dict__
-            if 'C3k2_SW' not in model_globals:
-                model_globals['C3k2_SW'] = C3k2_SW
-            if 'BottleneckSW' not in model_globals:
-                model_globals['BottleneckSW'] = BottleneckSW
-            
-            # 調用原始 parse_model
-            return tasks._parse_model_original(d, ch, verbose)
-        
-        # 替換 parse_model（但實際上原始 parse_model 已經有處理邏輯，我們只需要確保模組在命名空間中）
-        # 所以我們不需要替換，只需要確保模組已注入
+        # 6. 確保 parse_model 中的 C3k2_SW 參數處理邏輯正確
+        # parse_model 中已經有處理 C3k2_SW 的邏輯（在 ultralytics 的 tasks.py 中）
+        # 但我們需要確保參數順序正確
         
         print("✅ C3k2_SW registered in base_modules and repeat_modules")
         print("✅ parse_model ready to support C3k2_SW")
