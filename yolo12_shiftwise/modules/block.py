@@ -92,8 +92,21 @@ def _create_c3k2_sw_class():
             replace_both: bool = True,
         ):
             """Initialize ShiftWise-enabled C3k2 module with configurable big_k."""
+            # 調試：打印接收到的參數（僅第一次）
+            if not hasattr(C3k2_SW, '_debug_printed'):
+                print(f"DEBUG C3k2_SW.__init__ received: c1={c1} (type={type(c1)}), c2={c2} (type={type(c2)}), n={n} (type={type(n)}), c3k={c3k}, e={e} (type={type(e)}), g={g} (type={type(g)}), shortcut={shortcut} (type={type(shortcut)})")
+                C3k2_SW._debug_printed = True
+            
             # 直接調用父類 C2f 的 __init__，與可運行的版本保持一致
             # C2f 的參數順序是: (c1, c2, n, shortcut, g, e)
+            # 確保所有參數都是正確的類型
+            c1 = int(c1)
+            c2 = int(c2)
+            n = int(n)
+            shortcut = bool(shortcut)
+            g = int(g)
+            e = float(e)
+            
             super().__init__(c1, c2, n, shortcut, g, e)
             
             # 替換 m 為 ShiftWise 版本
