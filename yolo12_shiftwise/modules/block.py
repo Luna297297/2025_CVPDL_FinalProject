@@ -104,13 +104,16 @@ def _create_c3k2_sw_class():
             # C2f 的參數順序是: (c1, c2, n, shortcut, g, e)
             # parse_model 傳入的參數順序是: (c1, c2, n, c3k, e, g, shortcut, big_k, replace_both)
             # 所以我們需要重新排列參數
-            # 確保所有參數都是正確的類型
-            c1 = int(c1)
-            c2 = int(c2)
-            n = int(n)
-            shortcut = bool(shortcut) if not isinstance(shortcut, bool) else shortcut
-            g = int(g) if g is not None else 1
-            e = float(e) if e is not None else 0.5
+            # 確保所有參數都是正確的類型（避免 tuple 或其他類型錯誤）
+            c1 = int(c1) if not isinstance(c1, (int, float)) else int(c1)
+            c2 = int(c2) if not isinstance(c2, (int, float)) else int(c2)
+            n = int(n) if not isinstance(n, (int, float)) else int(n)
+            # shortcut 和 g 需要從正確的位置提取
+            # 根據 parse_model 的邏輯：args = [c1, c2, n, c3k, e, g, shortcut, ...]
+            # 所以 shortcut = args[6], g = args[5]
+            shortcut = bool(shortcut) if shortcut is not None else True
+            g = int(g) if g is not None and not isinstance(g, (tuple, list)) else 1
+            e = float(e) if e is not None and not isinstance(e, (tuple, list)) else 0.5
             super().__init__(c1, c2, n, shortcut, g, e)
             
             # 替換 m 為 ShiftWise 版本
