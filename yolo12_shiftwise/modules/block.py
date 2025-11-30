@@ -121,7 +121,7 @@ def get_c3k2_sw_class():
     global _C3k2_SW_class
     if _C3k2_SW_class is None:
         _C3k2_SW_class = _create_c3k2_sw_class()
-    return _C3k2_sw_class
+    return _C3k2_SW_class
 
 
 # 為了向後相容，創建一個代理類
