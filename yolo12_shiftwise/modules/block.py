@@ -103,10 +103,13 @@ def _create_c3k2_sw_class():
             # 調用父類 C2f 的 __init__
             # C2f 的參數順序是: (c1, c2, n, shortcut, g, e)
             # parse_model 傳入的參數順序是: (c1, c2, n, c3k, e, g, shortcut, big_k, replace_both)
-            # 注意：parse_model 已經處理了 c1 和 c2，所以這裡直接使用即可
+            
+            # 調試：打印接收到的參數（僅第一次）
+            if not hasattr(C3k2_SW, '_debug_printed'):
+                print(f"DEBUG C3k2_SW.__init__ received: c1={c1} (type={type(c1)}), c2={c2} (type={type(c2)}), n={n} (type={type(n)}), c3k={c3k}, e={e} (type={type(e)}), g={g} (type={type(g)}), shortcut={shortcut} (type={type(shortcut)})")
+                C3k2_SW._debug_printed = True
             
             # 確保所有參數都是正確的類型
-            # c1 和 c2 應該已經是正確的 int 類型（由 parse_model 處理）
             c1 = int(c1) if not isinstance(c1, (tuple, list)) else int(c1[0])
             c2 = int(c2) if not isinstance(c2, (tuple, list)) else int(c2[0])
             n = int(n) if not isinstance(n, (tuple, list)) else int(n[0])
@@ -129,9 +132,9 @@ def _create_c3k2_sw_class():
             
             # 驗證參數有效性
             if c1 <= 0 or c2 <= 0:
-                raise ValueError(f"Invalid channel values: c1={c1}, c2={c2}. This usually means parse_model didn't process args correctly.")
+                raise ValueError(f"Invalid channel values: c1={c1}, c2={c2}. Original values: c1={c1} (type={type(c1)}), c2={c2} (type={type(c2)}). This usually means parse_model didn't process args correctly.")
             if e <= 0:
-                raise ValueError(f"Invalid expansion ratio: e={e}. Must be > 0.")
+                raise ValueError(f"Invalid expansion ratio: e={e}. Original value: {e} (type={type(e)}). Must be > 0.")
             
             super().__init__(c1, c2, n, shortcut, g, e)
             
